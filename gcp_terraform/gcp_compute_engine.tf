@@ -33,7 +33,7 @@ resource "google_compute_instance_template" "instance_template" {
 ### マネージドインスタンスグループ向けのヘルスチェック設定 (Auto Healing)
 resource "google_compute_health_check" "autohealing" {
   name                = "${var.project_prefix}autohealing-health-check"
-  check_interval_sec  = 5
+  check_interval_sec  = 10
   timeout_sec         = 5
   healthy_threshold   = 2
   unhealthy_threshold = 10 # 50 seconds
@@ -52,6 +52,11 @@ resource "google_compute_instance_group_manager" "appserver" {
 
   version {
     instance_template = google_compute_instance_template.instance_template.id
+  }
+
+  named_port {
+    name = "http"
+    port = 80
   }
 
   target_size = 3

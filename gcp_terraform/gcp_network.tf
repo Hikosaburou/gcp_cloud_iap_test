@@ -37,3 +37,8 @@ resource "google_compute_firewall" "allow_http" {
   source_ranges = ["130.211.0.0/22", "35.191.0.0/16"]
   target_tags   = [var.tag_allow_http]
 }
+
+### ロードバランサー用の外部IP
+resource "google_compute_global_address" "app" {
+  name = "${var.project_prefix}-app-ip"
+}

@@ -4,6 +4,7 @@ resource "google_compute_global_forwarding_rule" "default" {
   name       = "${var.project_prefix}-global-rule"
   target     = google_compute_target_https_proxy.default.id
   port_range = "443"
+  ip_address = google_compute_global_address.app.address
 }
 
 resource "google_compute_managed_ssl_certificate" "default" {
@@ -12,7 +13,7 @@ resource "google_compute_managed_ssl_certificate" "default" {
   name = "${var.project_prefix}-cert"
 
   managed {
-    domains = ["${var.lb_host}."]
+    domains = ["${var.lb_host}"]
   }
 }
 
@@ -27,7 +28,7 @@ resource "google_compute_target_https_proxy" "default" {
 resource "google_compute_url_map" "default" {
   provider = google-beta
 
-  name            = "${var.project_prefix}-url-map-target-proxy"
+  name            = "${var.project_prefix}-url-map"
   default_service = google_compute_backend_service.default.id
 
   host_rule {
@@ -38,16 +39,17 @@ resource "google_compute_url_map" "default" {
   path_matcher {
     name            = "allpaths"
     default_service = google_compute_backend_service.default.id
-
+/*
     path_rule {
       paths   = ["/*"]
       service = google_compute_backend_service.default.id
     }
+    */
   }
 }
 
 resource "google_compute_backend_service" "default" {
-  name        = "${var.project_prefix}-backend"
+  name        = "my-backend-service"
   port_name   = "http"
   protocol    = "HTTP"
   timeout_sec = 10
